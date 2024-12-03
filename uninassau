@@ -1,0 +1,202 @@
+import random
+
+class ContaCorrente:
+    def __init__(self, titular, senha):
+        self.titular = titular
+        self.numero = random.randint(100, 999)
+        self.__senha = senha
+        self.__saldo_corrente = 0.0
+
+    def get_saldo_corrente(self):
+        return self.__saldo_corrente
+
+    def set_saldo_corrente(self, valor):
+        self.__saldo_corrente = valor
+
+    def verificar_senha(self):
+        tentativas = 0
+        while tentativas < 3:
+            senha = input("Digite sua senha de 4 dígitos: ")
+            if senha == self.__senha:
+                return True
+            else:
+                print("Senha incorreta. Tente novamente.")
+                tentativas += 1
+        print("Conta bloqueada. Dirija-se à agência com documento com foto para desbloqueio.")
+        return False
+
+    def sacar(self, valor):
+        if self.verificar_senha():
+            if valor <= self.__saldo_corrente:
+                self.__saldo_corrente -= valor
+                print("Saque efetuado com sucesso!")
+            else:
+                print("Saldo insuficiente.")
+
+    def depositar(self, valor):
+        self.__saldo_corrente += valor
+        print("Depósito efetuado com sucesso!")
+
+    def aplicar(self, conta_poupanca, valor):
+        if self.verificar_senha():
+            if valor <= self.__saldo_corrente:
+                self.__saldo_corrente -= valor
+                conta_poupanca.set_saldo_poupanca(conta_poupanca.get_saldo_poupanca() + valor)
+                print("Aplicação efetuada com sucesso!")
+            else:
+                print("Saldo insuficiente.")
+
+class ContaPoupanca(ContaCorrente):
+    def __init__(self, titular, senha):
+        super().__init__(titular, senha)
+        self.__saldo_poupanca = 0.0
+
+    def get_saldo_poupanca(self):
+        return self.__saldo_poupanca
+
+    def set_saldo_poupanca(self, valor):
+        self.__saldo_poupanca = valor
+
+    def resgatar(self, valor):
+        if self.verificar_senha():
+            if valor <= self.__saldo_poupanca:
+                self.__saldo_poupanca -= valor
+                self.set_saldo_corrente(self.get_saldo_corrente() + valor)
+                print("Resgate efetuado com sucesso!")
+            else:
+                print("Saldo insuficiente.")
+
+    def extrato(self):
+        if self.verificar_senha():
+            print(f"Titular: {self.titular}")
+            print(f"Número da conta: {self.numero}")
+            print(f"Saldo da Conta Corrente: R$ {self.get_saldo_corrente():.2f}")
+            print(f"Saldo da Conta Poupança: R$ {self.get_saldo_poupanca():.2f}")
+
+# Função principal para criar a conta e interagir com o usuário
+def criar_conta():
+    titular = input("Nome do titular da conta: ")
+    senha = input("Digite uma senha numérica de 4 dígitos: ")
+    conta_corrente = ContaCorrente(titular, senha)
+    conta_poupanca = ContaPoupanca(titular, senha)
+    
+    print("Realize seu primeiro depósito de no mínimo R$ 10,00!")
+    valor = float(input("Valor do depósito: "))
+    while valor < 10:
+        print("Depósito mínimo é R$ 10,00.")
+        valor = float(input("Valor do depósito: "))
+    
+    conta_corrente.depositar(valor)
+    print("Conta Criada!")
+    print(f"Número da conta: {conta_corrente.numero}")
+    
+    return conta_corrente, conta_poupanca
+
+def main():
+    conta_corrente, conta_poupanca = criar_conta()
+    while True:
+        print("\nEscolha uma operação:")
+        print("1. Extrato")
+        print("2. Depositar")
+        print("3. Sacar")
+        print("4. Aplicar na Poupança")
+        print("5. Resgatar da Poupança")
+        print("6. Sair")
+        
+        opcao = int(input("Digite o número da operação: "))
+        
+        if opcao == 1:
+            conta_poupanca.extrato()
+        elif opcao == 2:
+            valor = float(input("Valor do depósito: "))
+            conta_corrente.depositar(valor)
+        elif opcao == 3:
+            valor = float(input("Valor do saque: "))
+            conta_corrente.sacar(valor)
+        elif opcao == 4:
+            valor = float(input("Valor da aplicação: "))
+            conta_corrente.aplicar(conta_poupanca, valor)
+        elif opcao == 5:
+            valor = float(input("Valor do resgate: "))
+            conta_poupanca.resgatar(valor)
+        elif opcao == 6:
+            print("Finalizando o atendimento. Obrigado!")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+if __name__ == "__main__":
+    main()
+
+
+Como funciona o codigo:
+
+1:Classe ContaCorrente:
+
+Atributos: titular, número da conta, senha e saldo da conta corrente (privados).
+
+Métodos: sacar, depositar, aplicar e métodos get e set para saldo e senha.
+
+Verificação de senha com limite de três tentativas.
+
+2:Classe ContaPoupanca:
+
+Herda de ContaCorrente e adiciona o saldo da conta poupança.
+
+Métodos: resgatar e extrato, além de métodos get e set para saldo da poupança.
+
+3:Função criar_conta:
+
+Solicita nome do titular e senha.
+
+Gera um número de conta aleatório e solicita o primeiro depósito mínimo de R$ 10,00.
+
+4:Função main:
+
+Interação com o usuário para realizar operações como extrato, depósito, saque, aplicação na poupança, resgate da poupança e sair.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
